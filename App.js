@@ -1,11 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { useAsync } from 'react-async-hook';
+
+const fetchStarwarsHero = async () =>
+  (await fetch(`https://swapi.dev/api/people/1/`)).json();
+
 
 export default function App() {
+  const asyncHero = useAsync(fetchStarwarsHero);
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      {asyncHero.loading && <View><Text>Loading</Text></View>}
+      {asyncHero.error && (
+        <View>
+          <Text>Error: {asyncHero.error.message}</Text>
+        </View>
+      )}
+      {asyncHero.result && (
+        <View>
+          <Text>Success!</Text>
+          <Text>Name: {asyncHero.result.name}</Text>
+        </View>
+      )}
+      <StatusBar style='auto' />
     </View>
   );
 }
